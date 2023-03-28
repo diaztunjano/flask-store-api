@@ -26,3 +26,10 @@ def create_store():
     stores.append(new_store)
 
     return new_store, 201
+
+
+# @app.route("/store/<string:name>/item", methods=["GET", "POST"])
+# def create_item(name):
+#     request_data = request.get_json()
+#     for store in stores:
+#         request_data[""]
