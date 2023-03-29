@@ -34,17 +34,22 @@ def create_item():
     return item, 201
 
 
+@app.route("/items", methods=["GET"])
+def get_all_items():
+    return {"items": list(items.values())}
+
+
 @app.route("/stores/<string:store_id>", methods=["GET"])
 def get_specific_store(store_id):
     try:
-        return stores[store_id]
+        return stores[int(store_id)]
     except KeyError:
         return {"message": "Store not found"}, 404
 
 
-@app.route("/stores/<string:name>/items", methods=["GET"])
-def get_specific_store_items(name):
-    for store in stores:
-        if store["name"] == name:
-            return {"items": store["items"]}
-    return {"message": "Store not found"}, 404
+@app.route("/items/<string:item_id>", methods=["GET"])
+def get_item(item_id):
+    try:
+        return items[item_id]
+    except KeyError:
+        return {"message": "Item not found"}, 404

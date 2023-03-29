@@ -9,4 +9,4 @@ items = {
     },
 }
 
-stores = {}
+stores = {1: {"name": "Adidas"}, 2: {"name": "Nike"}}
