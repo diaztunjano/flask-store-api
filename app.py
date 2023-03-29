@@ -79,3 +79,22 @@ def get_item(item_id):
         return items[item_id]
     except KeyError:
         return abort(404, message="Item not found")
+
+
+@app.route("/items/<string:item_id>", methods=["PUT"])
+def modify_item(item_id):
+    try:
+        item_data = request.get_json()
+        items[item_id].update(item_data)
+        return items[item_id]
+    except KeyError:
+        return abort(404, message="Item not found")
+
+
+@app.route("/items/<string:item_id>", methods=["DELETE"])
+def delete_item(item_id):
+    try:
+        del items[item_id]
+        return "Item succesfully deleted", 200
+    except KeyError:
+        return abort(404, message="Item not found")
