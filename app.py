@@ -37,3 +37,19 @@ def create_item(name):
             store["items"].append(new_item)
             return new_item, 201
     return {"message": "Store not found"}, 404
+
+
+@app.route("/stores/<string:name>", methods=["GET"])
+def get_specific_store(name):
+    for store in stores:
+        if store["name"] == name:
+            return {"store": store}
+    return {"message": "Store not found"}, 404
+
+
+@app.route("/stores/<string:name>/items", methods=["GET"])
+def get_specific_store_items(name):
+    for store in stores:
+        if store["name"] == name:
+            return {"items": store["items"]}
+    return {"message": "Store not found"}, 404
