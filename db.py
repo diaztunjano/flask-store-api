@@ -1,12 +1,3 @@
-items = {
-    1: {
-        "name": "Chair",
-        "price": 14.5,
-    },
-    2: {
-        "name": "Table",
-        "price": 55,
-    },
-}
+from flask_sqlalchemy import SQLAlchemy
 
-stores = {}
+db = SQLAlchemy()
