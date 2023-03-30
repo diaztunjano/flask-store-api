@@ -1,111 +1,25 @@
-import uuid
-from flask import Flask, request
-from flask_smorest import abort
-from db import items, stores
+from flask import Flask
+from flask_smorest import Api
+from resources.item import blp as ItemBlueprint
+from resources.store import blp as StoreBlueprint
+
 
 app = Flask(__name__)
 
+# Flask-Smorest configuration
+# If there is an exception, Flask-Smorest will return a JSON response
+app.config["PROPAGATE_EXCEPTIONS"] = True
+app.config["API_TITLE"] = "Stores REST API"
+app.config["API_VERSION"] = "1.0"
+app.config["OPENAPI_VERSION"] = "3.0.3"
+# OPEN API SPECIFICATION
+# Flask-smorest uses Swagger UI to display the API documentation
+app.config["OPENAPI_URL_PREFIX"] = "/"
+# The path to the Swagger UI Documentation
+app.config["OPENAPI_SWAGGER_UI_PATH"] = "/swagger-ui"
+app.config["OPENAPI_SWAGGER_UI_URL"] = "https://cdn.jsdelivr.net/npm/swagger-ui-dist/"
 
-@app.route("/stores", methods=["GET", "POST"])
-def create_store():
-    store_data = request.get_json()
+api = Api(app)
 
-    if "name" not in store_data:
-        return abort(400, message="Missing required fields ('name')")
-
-    for store in stores.values():
-        if store["name"] == store_data["name"]:
-            return abort(400, message="Store already exists")
-
-    store_id = uuid.uuid4().hex
-    new_store = {**store_data, "id": store_id}
-    stores[store_id] = new_store
-
-    return new_store, 201
-
-
-@app.route("/store", methods=["GET"])
-def get_stores():
-    return {"stores": list(stores.values())}
-
-
-@app.route("/stores/<string:store_id>", methods=["GET"])
-def get_store(store_id):
-    try:
-        return stores[store_id]
-    except KeyError:
-        return abort(404, message="Store not found")
-
-
-@app.route("/stores/<string:store_id>", methods=["DELETE"])
-def delete_store(store_id):
-    try:
-        del stores[store_id]
-        return "Store succesfully deleted", 200
-    except KeyError:
-        return abort(404, message="Store not found")
-
-
-@app.route("/items", methods=["GET", "POST"])
-def create_item():
-    item_data = request.get_json()
-
-    if (
-        "name" not in item_data
-        or "price" not in item_data
-        or "store_id" not in item_data
-    ):
-        return abort(
-            400, message="Missing required fields ('name', 'price', 'store_id')"
-        )
-
-    for item in items.values():
-        if (
-            item["name"] == item_data["name"]
-            and item["store_id"] == item_data["store_id"]
-        ):
-            return abort(400, message="Item already exists in store")
-
-    if item_data["store_id"] not in stores:
-        return abort(404, message="Store not found")
-
-    item_id = uuid.uuid4().hex
-    item = {**item_data, "id": item_id}
-
-    items[item_id] = item
-
-    return item, 201
-
-
-@app.route("/item", methods=["GET"])
-def get_items():
-    return {"items": list(items.values())}
-
-
-@app.route("/items/<string:item_id>", methods=["GET"])
-def get_item(item_id):
-    try:
-        return items[item_id]
-    except KeyError:
-        return abort(404, message="Item not found")
-
-
-@app.route("/items/<string:item_id>", methods=["PUT"])
-def modify_item(item_id):
-    item_data = request.get_json()
-    if "name" not in item_data or "price" not in item_data:
-        return abort(400, message="Missing required fields ('name', 'price')")
-    try:
-        items[item_id].update(item_data)
-        return items[item_id]
-    except KeyError:
-        return abort(404, message="Item not found")
-
-
-@app.route("/items/<string:item_id>", methods=["DELETE"])
-def delete_item(item_id):
-    try:
-        del items[item_id]
-        return "Item succesfully deleted", 200
-    except KeyError:
-        return abort(404, message="Item not found")
+api.register_blueprint(ItemBlueprint)
+api.register_blueprint(StoreBlueprint)
