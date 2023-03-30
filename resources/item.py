@@ -2,7 +2,8 @@ import uuid
 from flask import request
 from flask.views import MethodView
 from flask_smorest import Blueprint, abort
-from db import items, stores
+from db import items
+from schemas import ItemSchema, ItemUpdateSchema
 
 blp = Blueprint("Items", __name__, description="Operations on items")
 
@@ -22,9 +23,8 @@ class Item(MethodView):
         except KeyError:
             return abort(404, message="Item not found")
 
-    def put(self, item_id):
-        item_data = request.get_json()
-
+    @blp.arguments(ItemUpdateSchema)
+    def put(self, item_data, item_id):
         if "name" not in item_data or "price" not in item_data:
             return abort(400, message="Missing required fields ('name', 'price')")
 
@@ -44,18 +44,8 @@ class ItemList(MethodView):
     def get(self):
         return {"items": list(items.values())}
 
-    def post(self):
-        item_data = request.get_json()
-
-        if (
-            "name" not in item_data
-            or "price" not in item_data
-            or "store_id" not in item_data
-        ):
-            return abort(
-                400, message="Missing required fields ('name', 'price', 'store_id')"
-            )
-
+    @blp.arguments(ItemSchema)
+    def post(self, item_data):
         for item in items.values():
             if (
                 item["name"] == item_data["name"]
