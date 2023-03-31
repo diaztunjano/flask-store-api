@@ -10,7 +10,7 @@ class PlainItemSchema(Schema):
 
 class PlainStoreSchema(Schema):
     id = fields.Integer(dump_only=True)
-    name = fields.String(required=True)
+    name = fields.String()
 
 
 class ItemUpdateSchema(Schema):

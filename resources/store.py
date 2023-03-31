@@ -2,7 +2,6 @@ from flask.views import MethodView
 from flask_smorest import Blueprint, abort
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 
-from db import db
 from models import StoreModel
 from schemas import ItemSchema, StoreSchema
 
@@ -52,4 +51,4 @@ class StoreList(MethodView):
         except SQLAlchemyError:
             abort(500, message="An error occurred creating the store.")
 
-        return store_data
+        return store
