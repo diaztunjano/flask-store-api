@@ -16,6 +16,8 @@ class ItemModel(db.Model):
     )
     # back_populates="store" is the same as "items" in StoreModel
     store = db.relationship("StoreModel", back_populates="items")
+    # secondary="items_tags" is the same as "tags" in TagModel
+    tags = db.relationship("TagModel", secondary="items_tags", back_populates="items")
 
     def __init__(self, name, price, store_id):
         self.name = name

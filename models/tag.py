@@ -14,6 +14,7 @@ class TagModel(db.Model):
     )
 
     store = db.relationship("StoreModel", back_populates="tags")
+    items = db.relationship("ItemModel", secondary="items_tags", back_populates="tags")
 
     def __init__(self, name, store_id):
         self.name = name
