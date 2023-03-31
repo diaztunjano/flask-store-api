@@ -9,6 +9,7 @@ class ItemModel(db.Model):
     store_id = db.Column(
         db.Integer, db.ForeignKey("stores.id"), unique=False, nullable=False
     )
+    # TODO: Adding created and updated timestamps:
     # back_populates="store" is the same as "items" in StoreModel
     store = db.relationship("StoreModel", back_populates="items")
 
@@ -21,10 +22,10 @@ class ItemModel(db.Model):
         return {"name": self.name, "price": self.price}
 
     @classmethod
-    def find_by_name(cls, name):
+    def find_by_id(cls, id):
         return cls.query.filter_by(
-            name=name
-        ).first()  # SELECT * FROM items WHERE name=name LIMIT 1
+            id=id
+        ).first()  # SELECT * FROM items WHERE id=id LIMIT 1
 
     def save_to_db(self):
         db.session.add(self)

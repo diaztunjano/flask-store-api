@@ -13,15 +13,30 @@ blp = Blueprint("Items", "items", description="Operations on items")
 class Item(MethodView):
     @blp.response(200, ItemSchema)
     def get(self, item_id):
-        raise NotImplementedError("Getting an item is not implemented.")
+        try:
+            item = ItemModel.find_by_id(item_id)
+            return item
+        except SQLAlchemyError:
+            abort(500, message="An error occurred while retrieving the item.")
 
     def delete(self, item_id):
-        raise NotImplementedError("Deleting an item is not implemented.")
+        try:
+            item = ItemModel.find_by_id(item_id)
+            item.delete_from_db()
+        except SQLAlchemyError:
+            abort(500, message="An error occurred while deleting the item.")
 
     @blp.arguments(ItemUpdateSchema)
     @blp.response(200, ItemSchema)
     def put(self, item_data, item_id):
-        raise NotImplementedError("Updating an item is not implemented.")
+        try:
+            item = ItemModel.find_by_id(item_id)
+            item.name = item_data["name"]
+            item.price = item_data["price"]
+            item.save_to_db()
+            return item
+        except SQLAlchemyError:
+            abort(500, message="An error occurred while updating the item.")
 
 
 @blp.route("/item")

@@ -5,6 +5,9 @@ class StoreModel(db.Model):
     __tablename__ = "stores"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), nullable=False, unique=True)
+
+    # TODO: Adding created and updated timestamps:
+
     # back_populates="items" is the same as "store" in ItemModel
     # lazy="dynamic" means that the items will not be loaded until we call .all()
     # This will speed up the query
