@@ -12,7 +12,12 @@ class StoreModel(db.Model):
     # lazy="dynamic" means that the items will not be loaded until we call .all()
     # This will speed up the query
 
-    items = db.relationship("ItemModel", back_populates="store", lazy="dynamic")
+    items = db.relationship(
+        "ItemModel",
+        back_populates="store",
+        lazy="dynamic",
+        cascade="all, delete",
+    )
 
     def __init__(self, name):
         self.name = name
