@@ -14,17 +14,29 @@ blp = Blueprint("Stores", "stores", description="Operations on stores")
 class Store(MethodView):
     @blp.response(200, StoreSchema)
     def get(self, store_id):
-        raise NotImplementedError("Getting a store is not implemented.")
+        try:
+            store = StoreModel.find_by_id(store_id)
+            return store
+        except SQLAlchemyError:
+            abort(500, message="An error occurred while retrieving the store.")
 
     def delete(self, store_id):
-        raise NotImplementedError("Deleting a store is not implemented.")
+        try:
+            store = StoreModel.find_by_id(store_id)
+            store.delete_from_db()
+            return {"message": "Store deleted."}
+        except SQLAlchemyError:
+            abort(500, message="An error occurred while deleting the store.")
 
 
 @blp.route("/store")
 class StoreList(MethodView):
     @blp.response(200, ItemSchema(many=True))
     def get(self):
-        raise NotImplementedError("Listing stores is not implemented.")
+        try:
+            return StoreModel.query.all()
+        except SQLAlchemyError:
+            abort(500, message="An error occurred while retrieving the stores.")
 
     @blp.arguments(StoreSchema)
     @blp.response(201, StoreSchema)

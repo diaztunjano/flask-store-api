@@ -20,10 +20,10 @@ class StoreModel(db.Model):
         return {"name": self.name, "items": [item.json() for item in self.items.all()]}
 
     @classmethod
-    def find_by_name(cls, name):
+    def find_by_id(cls, id):
         return cls.query.filter_by(
-            name=name
-        ).first()  # SELECT * FROM stores WHERE name=name LIMIT 1
+            id=id
+        ).first()  # SELECT * FROM stores WHERE id=id LIMIT 1
 
     def save_to_db(self):
         db.session.add(self)

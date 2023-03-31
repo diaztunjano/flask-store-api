@@ -23,6 +23,7 @@ class Item(MethodView):
         try:
             item = ItemModel.find_by_id(item_id)
             item.delete_from_db()
+            return {"message": "Item deleted."}
         except SQLAlchemyError:
             abort(500, message="An error occurred while deleting the item.")
 
@@ -31,8 +32,12 @@ class Item(MethodView):
     def put(self, item_data, item_id):
         try:
             item = ItemModel.find_by_id(item_id)
-            item.name = item_data["name"]
-            item.price = item_data["price"]
+            if item:
+                item.name = item_data["name"]
+                item.price = item_data["price"]
+            else:
+                item = ItemModel(id=item_id, **item_data)
+
             item.save_to_db()
             return item
         except SQLAlchemyError:
@@ -43,7 +48,10 @@ class Item(MethodView):
 class ItemList(MethodView):
     @blp.response(200, ItemSchema(many=True))
     def get(self):
-        raise NotImplementedError("Listing items is not implemented.")
+        try:
+            return ItemModel.query.all()
+        except SQLAlchemyError:
+            abort(500, message="An error occurred while retrieving the items.")
 
     @blp.arguments(ItemSchema)
     @blp.response(200, ItemSchema)
