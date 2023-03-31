@@ -35,12 +35,11 @@ def create_app(db_url=None):
 
     # Initialize the database
     db.init_app(app)
+    api = Api(app)
 
     # Create the tables in the database. This is only needed if the tables do not exist
     with app.app_context():
         db.create_all()
-
-    api = Api(app)
 
     api.register_blueprint(ItemBlueprint)
     api.register_blueprint(StoreBlueprint)

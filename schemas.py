@@ -9,7 +9,7 @@ class PlainItemSchema(Schema):
 
 
 class PlainStoreSchema(Schema):
-    id = fields.String(dump_only=True)
+    id = fields.Integer(dump_only=True)
     name = fields.String(required=True)
 
 
@@ -22,8 +22,8 @@ class ItemSchema(PlainItemSchema):
     # Whenever we use ItemSchema, we will also get the store field
     store_id = fields.Integer(required=True, load_only=True)
     # This will be used when returing data to the client
-    store = fields.Nested(PlainStoreSchema, dump_only=True)
+    store = fields.Nested(PlainStoreSchema(), dump_only=True)
 
 
 class StoreSchema(PlainStoreSchema):
-    items = fields.List(fields.Nested(PlainItemSchema), dump_only=True)
+    items = fields.List(fields.Nested(PlainItemSchema()), dump_only=True)

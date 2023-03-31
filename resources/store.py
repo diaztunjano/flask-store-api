@@ -1,44 +1,43 @@
-import uuid
-from flask import request
 from flask.views import MethodView
 from flask_smorest import Blueprint, abort
-from schemas import StoreSchema
+from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 
-blp = Blueprint("stores", __name__, description="Operations on stores")
+from db import db
+from models import StoreModel
+from schemas import ItemSchema, StoreSchema
 
 
-@blp.route("/stores/<string:store_id>")
+blp = Blueprint("Stores", "stores", description="Operations on stores")
+
+
+@blp.route("/store/<string:store_id>")
 class Store(MethodView):
     @blp.response(200, StoreSchema)
     def get(self, store_id):
-        try:
-            return stores[store_id]
-        except KeyError:
-            return abort(404, message="Store not found")
+        raise NotImplementedError("Getting a store is not implemented.")
 
     def delete(self, store_id):
-        try:
-            del stores[store_id]
-            return "Store succesfully deleted", 200
-        except KeyError:
-            return abort(404, message="Store not found")
+        raise NotImplementedError("Deleting a store is not implemented.")
 
 
 @blp.route("/store")
 class StoreList(MethodView):
-    @blp.response(200, StoreSchema(many=True))
+    @blp.response(200, ItemSchema(many=True))
     def get(self):
-        return stores.values()
+        raise NotImplementedError("Listing stores is not implemented.")
 
     @blp.arguments(StoreSchema)
-    @blp.response(200, StoreSchema)
+    @blp.response(201, StoreSchema)
     def post(self, store_data):
-        for store in stores.values():
-            if store["name"] == store_data["name"]:
-                return abort(400, message="Store already exists")
+        store = StoreModel(**store_data)
+        try:
+            store.save_to_db()
+        except IntegrityError:
+            abort(
+                400,
+                message="A store with that name already exists.",
+            )
+        except SQLAlchemyError:
+            abort(500, message="An error occurred creating the store.")
 
-        store_id = uuid.uuid4().hex
-        new_store = {**store_data, "id": store_id}
-        stores[store_id] = new_store
-
-        return new_store, 201
+        return store_data

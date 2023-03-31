@@ -12,9 +12,10 @@ class ItemModel(db.Model):
     # back_populates="store" is the same as "items" in StoreModel
     store = db.relationship("StoreModel", back_populates="items")
 
-    def __init__(self, name, price):
+    def __init__(self, name, price, store_id):
         self.name = name
         self.price = price
+        self.store_id = store_id
 
     def json(self):
         return {"name": self.name, "price": self.price}
