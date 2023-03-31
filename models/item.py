@@ -1,3 +1,4 @@
+from datetime import datetime
 from db import db
 
 
@@ -9,7 +10,10 @@ class ItemModel(db.Model):
     store_id = db.Column(
         db.Integer, db.ForeignKey("stores.id"), unique=False, nullable=False
     )
-    # TODO: Adding created and updated timestamps:
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    updated_at = db.Column(
+        db.DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow
+    )
     # back_populates="store" is the same as "items" in StoreModel
     store = db.relationship("StoreModel", back_populates="items")
 

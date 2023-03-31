@@ -1,3 +1,4 @@
+from datetime import datetime
 from db import db
 
 
@@ -5,9 +6,12 @@ class StoreModel(db.Model):
     __tablename__ = "stores"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), nullable=False, unique=True)
+    tags = db.relationship("TagModel", back_populates="store", lazy="dynamic")
 
-    # TODO: Adding created and updated timestamps:
-
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    updated_at = db.Column(
+        db.DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow
+    )
     # back_populates="items" is the same as "store" in ItemModel
     # lazy="dynamic" means that the items will not be loaded until we call .all()
     # This will speed up the query

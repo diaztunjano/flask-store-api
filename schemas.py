@@ -3,14 +3,19 @@ from marshmallow import Schema, fields
 
 class PlainItemSchema(Schema):
     # dump_only=True means that the field will be included in the response but not in the request
-    id = fields.String(dump_only=True)
+    id = fields.Integer(dump_only=True)
     name = fields.String(required=True)
     price = fields.Float(required=True)
 
 
 class PlainStoreSchema(Schema):
     id = fields.Integer(dump_only=True)
-    name = fields.String()
+    name = fields.String(required=True)
+
+
+class PlainTagSchema(Schema):
+    id = fields.Integer(dump_only=True)
+    name = fields.String(required=True)
 
 
 class ItemUpdateSchema(Schema):
@@ -28,3 +33,9 @@ class ItemSchema(PlainItemSchema):
 
 class StoreSchema(PlainStoreSchema):
     items = fields.List(fields.Nested(PlainItemSchema()), dump_only=True)
+    tags = fields.List(fields.Nested(PlainTagSchema()), dump_only=True)
+
+
+class TagSchema(PlainTagSchema):
+    store_id = fields.Integer(load_only=True)
+    store = fields.Nested(PlainStoreSchema(), dump_only=True)
