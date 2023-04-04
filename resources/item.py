@@ -12,6 +12,7 @@ blp = Blueprint("Items", "items", description="Operations on items")
 
 @blp.route("/item/<int:item_id>")
 class Item(MethodView):
+    @jwt_required()
     @blp.response(200, ItemSchema)
     def get(self, item_id):
         try:
@@ -51,6 +52,7 @@ class Item(MethodView):
 
 @blp.route("/item")
 class ItemList(MethodView):
+    @jwt_required()
     @blp.response(200, ItemSchema(many=True))
     def get(self):
         try:
