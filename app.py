@@ -4,6 +4,8 @@ from resources.item import blp as ItemBlueprint
 from resources.store import blp as StoreBlueprint
 from resources.tags import blp as TagBlueprint
 from resources.user import blp as UserBlueprint
+from flask_migrate import Migrate
+
 
 from blocklist import BLOCKLIST
 
@@ -39,6 +41,7 @@ def create_app(db_url=None):
 
     # Initialize the database
     db.init_app(app)
+    migrate = Migrate(app, db)
     api = Api(app)
 
     # JWT configuration
@@ -54,6 +57,18 @@ def create_app(db_url=None):
         return (
             jsonify(
                 {"description": "The token has been revoked.", "error": "token_revoked"}
+            ),
+            401,
+        )
+
+    @jwt.needs_fresh_token_loader
+    def token_not_fresh_callback(jwt_header, jwt_payload):
+        return (
+            jsonify(
+                {
+                    "description": "The token is not fresh.",
+                    "error": "fresh_token_required",
+                }
             ),
             401,
         )
@@ -100,9 +115,10 @@ def create_app(db_url=None):
             401,
         )
 
-    # Create the tables in the database. This is only needed if the tables do not exist
-    with app.app_context():
-        db.create_all()
+    # No longer needed because of the we are using Flask Migrate and Alembic
+    # # Create the tables in the database. This is only needed if the tables do not exist
+    # with app.app_context():
+    #     db.create_all()
 
     api.register_blueprint(ItemBlueprint)
     api.register_blueprint(StoreBlueprint)

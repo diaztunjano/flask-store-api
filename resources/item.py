@@ -60,7 +60,7 @@ class ItemList(MethodView):
         except SQLAlchemyError:
             abort(500, message="An error occurred while retrieving the items.")
 
-    @jwt_required()
+    @jwt_required(fresh=True)
     @blp.arguments(ItemSchema)
     @blp.response(200, ItemSchema)
     def post(self, item_data):

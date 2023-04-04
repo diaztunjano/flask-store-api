@@ -79,3 +79,14 @@ class UserLogout(MethodView):
         jti = get_jwt()["jti"]
         BLOCKLIST.add(jti)
         return {"message": "User logged out."}, 200
+
+
+@blp.route("/refresh")
+class TokenRefresh(MethodView):
+    @jwt_required(refresh=True)
+    def post(self):
+        current_user = UserModel.find_by_id(get_jwt()["identity"])
+        new_token = create_access_token(identity=current_user.id, fresh=False)
+        jti = get_jwt()["jti"]
+        BLOCKLIST.add(jti)
+        return {"access_token": new_token}, 200
