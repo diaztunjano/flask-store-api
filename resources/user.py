@@ -39,7 +39,7 @@ class UserLogin(MethodView):
         # sha256 verifies the password and returns True if it matches
         if user and sha256.verify(user_data["password"], user.password):
             print("user found")
-            access_token = create_access_token(identity=user.id)
+            access_token = create_access_token(identity=user.id, fresh=True)
             refresh_token = create_refresh_token(user.id)
             return {"access_token": access_token, "refresh_token": refresh_token}, 200
         return {"message": "Invalid credentials"}, 401
