@@ -4,6 +4,7 @@ from resources.item import blp as ItemBlueprint
 from resources.store import blp as StoreBlueprint
 from resources.tags import blp as TagBlueprint
 
+from flask_jwt_extended import JWTManager
 from db import db
 import os
 
@@ -36,6 +37,10 @@ def create_app(db_url=None):
     # Initialize the database
     db.init_app(app)
     api = Api(app)
+
+    # JWT configuration
+    app.config["JWT_SECRET_KEY"] = "jose"
+    jwt = JWTManager(app)
 
     # Create the tables in the database. This is only needed if the tables do not exist
     with app.app_context():
