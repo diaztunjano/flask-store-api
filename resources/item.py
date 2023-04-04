@@ -2,7 +2,7 @@ from flask.views import MethodView
 from flask_smorest import Blueprint, abort
 from sqlalchemy.exc import SQLAlchemyError
 
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import get_jwt, jwt_required
 
 from models import ItemModel
 from schemas import ItemSchema, ItemUpdateSchema
@@ -20,7 +20,11 @@ class Item(MethodView):
         except SQLAlchemyError:
             abort(500, message="An error occurred while retrieving the item.")
 
+    @jwt_required()
     def delete(self, item_id):
+        jwt = get_jwt()
+        if not jwt["is_admin"]:
+            abort(403, message="You are not authorized to perform this action.")
         try:
             item = ItemModel.find_by_id(item_id)
             item.delete_from_db()
