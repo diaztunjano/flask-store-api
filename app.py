@@ -6,6 +6,7 @@ from resources.tags import blp as TagBlueprint
 from resources.user import blp as UserBlueprint
 from flask_migrate import Migrate
 
+from dotenv import load_dotenv
 
 from blocklist import BLOCKLIST
 
@@ -16,6 +17,7 @@ import os
 
 def create_app(db_url=None):
     app = Flask(__name__)
+    load_dotenv()
 
     # Flask-Smorest configuration
     # If there is an exception, Flask-Smorest will return a JSON response
